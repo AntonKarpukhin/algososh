@@ -72,7 +72,7 @@ export const StringComponent: React.FC = () => {
         <div className={styles.wrapperForm}>
             <form className={styles.wrapper} onSubmit={onStartSwap}>
                 <Input value={valueInput} maxLength={11} isLimitText={true} onChange={onChangeValueInput}/>
-                <Button type="submit" text="Развернуть" isLoader={loader}/>
+                <Button type="submit" text="Развернуть" isLoader={loader} disabled = { valueInput.length < 2 }/>
             </form>
             <div className={styles.wrapperCircle}>
                 {valueCircle.map((item, i) => <Circle key={i} letter={item.letter} state={item.state}/>)}

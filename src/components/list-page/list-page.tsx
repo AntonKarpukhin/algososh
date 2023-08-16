@@ -235,7 +235,7 @@ export const ListPage: React.FC = () => {
     setListArray([...listArray]);
     await sleep(DELAY_IN_MS);
 
-    if (linked.getSize() > 0) {
+    if (linked.getSize() > 0 && listArray) {
       listArray.pop();
       listArray[listArray.length - 1].state = ElementStates.Modified;
       setListArray([...listArray]);
