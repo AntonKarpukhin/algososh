@@ -1,0 +1,18 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.wrapperForm {
+	display: flex;
+	gap: 20px;
+	justify-content: center;
+}
+
+.wrapperCircle {
+	list-style: none;
+	margin: 48px 0 0;
+	display: flex;
+	gap: 16px;
+}
