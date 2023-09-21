@@ -142,8 +142,8 @@ export const SortingPage: React.FC = () => {
   };
 
   return (
-    <SolutionLayout title="Сортировка массива">
-      <div className = { styles.wrapper }>
+    <SolutionLayout title="Сортировка массива" >
+      <div data-testid="sorting-page" className = { styles.wrapper }>
         <form className = { styles.wrapperForm }>
           <div className = { styles.radio }>
             <RadioInput
@@ -162,6 +162,7 @@ export const SortingPage: React.FC = () => {
           </div>
           <div className = { styles.sorting }>
             <Button
+                data-testid="sort-desc-button"
                 text = "По возрастанию"
                 sorting = { Direction.Descending }
                 onClick = { () => setSort(desc) }
@@ -170,6 +171,7 @@ export const SortingPage: React.FC = () => {
                 extraClass = { styles.button }
             />
             <Button
+                data-testid="sort-asc-button"
                 text = "По убыванию"
                 sorting = { Direction.Ascending }
                 onClick = { () => setSort(asc) }
@@ -179,6 +181,7 @@ export const SortingPage: React.FC = () => {
             />
           </div>
           <Button
+              data-testid="set-array-button"
               text = "Новый массив"
               onClick = { addNewArray }
               isLoader = { loading === "newArray" }
@@ -186,15 +189,16 @@ export const SortingPage: React.FC = () => {
               extraClass = { styles.button }
           />
         </form>
-        <div className = { styles.wrapperCircle }>
+        <div data-testid="container" className = { styles.wrapperCircle }>
           { array.map((element, i) => {
             return (
-                <Column
-                    index = { element.value }
-                    state = { element.state }
-                    key = { i }
-                    extraClass = { styles.element }
-                />
+                <div data-testid="array-element" key = { i } >
+                  <Column
+                      index = { element.value }
+                      state = { element.state }
+                      extraClass = { styles.element }
+                  />
+                </div>
             );
           })}
         </div>

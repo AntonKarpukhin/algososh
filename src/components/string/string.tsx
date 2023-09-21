@@ -71,11 +71,11 @@ export const StringComponent: React.FC = () => {
     <SolutionLayout title="Строка">
         <div className={styles.wrapperForm}>
             <form className={styles.wrapper} onSubmit={onStartSwap}>
-                <Input value={valueInput} maxLength={11} isLimitText={true} onChange={onChangeValueInput}/>
-                <Button type="submit" text="Развернуть" isLoader={loader} disabled = { valueInput.length < 2 }/>
+                <Input data-testid="input" value={valueInput} maxLength={11} isLimitText={true} onChange={onChangeValueInput}/>
+                <Button data-testid="button" type="submit" text="Развернуть" isLoader={loader} disabled = { valueInput.length < 1 }/>
             </form>
             <div className={styles.wrapperCircle}>
-                {valueCircle.map((item, i) => <Circle key={i} letter={item.letter} state={item.state}/>)}
+                {valueCircle.map((item, i) => <div key={i} data-testid="circle"><Circle letter={item.letter} state={item.state}/></div>)}
             </div>
         </div>
     </SolutionLayout>

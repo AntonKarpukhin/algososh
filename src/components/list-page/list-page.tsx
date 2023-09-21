@@ -1,499 +1,434 @@
 import React, { useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
-import { LinkedList, TListElement } from "./class";
 import { ElementStates } from "../../types/element-states";
-import { DELAY_IN_MS } from "../../constants/delays";
-import { Circle } from "../ui/circle/circle";
 import { Button } from "../ui/button/button";
+import { Circle } from "../ui/circle/circle";
 import { Input } from "../ui/input/input";
-
-import style from './list-page.module.css';
+import { LinkedList} from "./class";
 import { ArrowIcon } from "../ui/icons/arrow-icon";
+import styles from "./list-page.module.css";
 
-const startArray = [5, 26, 10, 4];
-const linked = new LinkedList<string | number>(startArray);
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const initialArray = ["1", "8", "34", "0"]
+const linkedList = new LinkedList<string>(initialArray);
 
 export const ListPage: React.FC = () => {
+  const [value, setValue] = useState("");
+  const [indexValue, setIndexValue] = useState("");
+  const [letters, setLetters] = useState<string[]>(linkedList.array);
+  const [topCircleIndex, setTopCircleIndex] = useState(-1);
+  const [topCircleLetter, setTopCircleLetter] = useState("");
+  const [bottomCircleIndex, setBottomCircleIndex] = useState(-1);
+  const [bottomCircleLetter, setBottomCircleLetter] = useState("");
+  const [modifiedIndexes, setModifiedIndexes] = useState<number[]>([]);
+  const [changedIndexes, setChangedIndexes] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState({
+    addToHead: false,
+    addToTail: false,
+    removeFromHead: false,
+    removeFromTail: false,
+    addByIndex: false,
+    removeByIndex: false,
+  });
+  const [isDisabled, setIsDisabled] = useState({
+    addToHead: false,
+    addToTail: false,
+    removeFromHead: false,
+    removeFromTail: false,
+    addByIndex: false,
+    removeByIndex: false,
+  });
 
-  const initialArr: Array<TListElement> = startArray.map((item, index, array) => ({
-    item: `${item}`,
-    state: ElementStates.Default,
-    head: index === 0 ? true : false,
-    tail: index === array.length - 1 ? true : false,
-    isAdded: false,
-    isRemoved: false,
-    newCircle: null,
-  }));
-
-  const [input, setInput] = useState<string>("");
-  const [index, setIndex] = useState<number>(0);
-  const [listArray, setListArray] = useState<Array<TListElement>>(initialArr);
-  const [addHead, setAddHead] = useState<boolean>(false);
-  const [addTail, setAddTail] = useState<boolean>(false);
-  const [removeHead, setRemoveHead] = useState<boolean>(false);
-  const [removeTail, setRemoveTail] = useState<boolean>(false);
-  const [addByIndex, setAddByIndex] = useState<boolean>(false);
-  const [removeByIndex, setRemoveByIndex] = useState<boolean>(false);
-
-  const onChangeValueInput = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    if (e.currentTarget.type === "text") {
-      setInput(e.currentTarget.value);
-    } else {
-      setIndex(+e.currentTarget.value);
-    }
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
   };
 
-  const onAddHead = async () => {
-    setAddHead(true);
-    linked.prepend(input);
-
-    if (linked.getSize() > 1) {
-      listArray[0] = {
-        ...listArray[0],
-        isAdded: true,
-        head: false,
-        newCircle: { item: input },
-        state: ElementStates.Changing,
-      };
-    } else {
-      listArray[0] = {
-        item: input,
-        isAdded: true,
-        head: true,
-        newCircle: null,
-        state: ElementStates.Changing,
-      };
-    }
-    setListArray([...listArray]);
-
-    await sleep(DELAY_IN_MS);
-
-    if (linked.getSize() > 1) {
-      listArray[0] = {
-        ...listArray[0],
-        isAdded: false,
-        head: false,
-        newCircle: null,
-        state: ElementStates.Default,
-      };
-    } else {
-      listArray[0] = {
-        item: input,
-        isAdded: false,
-        head: true,
-        tail: true,
-        newCircle: null,
-        state: ElementStates.Default,
-      };
-    }
-    setListArray([...listArray]);
-
-    await sleep(DELAY_IN_MS);
-
-    if (linked.getSize() > 1) {
-      listArray.unshift({ item: input, state: ElementStates.Modified });
-      setListArray([...listArray]);
-      await sleep(DELAY_IN_MS);
-    }
-
-    listArray[0] = {
-      ...listArray[0],
-      state: ElementStates.Default,
-      head: true,
-    };
-    setListArray([...listArray]);
-    setInput("");
-    setAddHead(false);
+  const handleIndexInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIndexValue(e.target.value);
   };
 
-  const onAddTail = async () => {
-    setAddTail(true);
-    linked.append(input);
+  const handleAddToHead = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setIsLoading((prevState) => ({ ...prevState, addToHead: true }));
+    setIsDisabled((prevstate) => ({
+      ...prevstate,
+      removeFromHead: true,
+      removeFromTail: true,
+    }));
+    if (!value) return null;
 
-    if (linked.getSize() > 0) {
-      listArray[listArray.length - 1] = {
-        ...listArray[listArray.length - 1],
-        tail: false,
-        isAdded: true,
-        newCircle: { item: input },
-        state: ElementStates.Changing,
-      };
-    } else {
-      listArray[0] = {
-        item: input,
-        head: true,
-        tail: true,
-        isAdded: true,
-        newCircle: null,
-        state: ElementStates.Changing,
-      };
-    }
-    setListArray([...listArray]);
+    linkedList.prepend(value);
+    setTopCircleIndex(0);
+    setTopCircleLetter(value);
+    setValue("");
 
-    await sleep(DELAY_IN_MS);
+    setTimeout(() => {
+      setLetters(linkedList.array);
+      setTopCircleIndex(-1);
+      setTopCircleLetter("");
+      setModifiedIndexes([0]);
 
-    if (linked.getSize() > 0) {
-      listArray[listArray.length - 1] = {
-        ...listArray[listArray.length - 1],
-        tail: false,
-        isAdded: false,
-        newCircle: null,
-        state: ElementStates.Default,
-      };
-    } else {
-      listArray[0] = {
-        item: input,
-        head: true,
-        tail: true,
-        isAdded: false,
-        newCircle: null,
-        state: ElementStates.Default,
-      };
-    }
-
-    setListArray([...listArray]);
-
-    await sleep(DELAY_IN_MS);
-
-    if (linked.getSize() > 0) {
-      listArray.push({ item: input, state: ElementStates.Modified });
-      setListArray([...listArray]);
-      await sleep(DELAY_IN_MS);
-    }
-
-    listArray[listArray.length - 1] = {
-      ...listArray[listArray.length - 1],
-      tail: true,
-      state: ElementStates.Default,
-    };
-    listArray[listArray.length - 2] = {
-      ...listArray[listArray.length - 2],
-      tail: false,
-    };
-    setListArray([...listArray]);
-    setInput("");
-    setAddTail(false);
+      setTimeout(() => {
+        setModifiedIndexes([]);
+        setIsLoading((prevState) => ({ ...prevState, addToHead: false }));
+        setIsDisabled((prevstate) => ({
+          ...prevstate,
+          removeFromHead: false,
+          removeFromTail: false,
+        }));
+      }, 500);
+    }, 500);
   };
 
-  const onRemoveHead = async () => {
-    setRemoveHead(true);
-    linked.deleteHead();
-    if (linked.getSize() > 0) {
-      listArray[0] = {
-        ...listArray[0],
-        head: false,
-        state: ElementStates.Changing,
-        item: "",
-        isRemoved: true,
-        newCircle: { item: listArray[0].item },
-      };
-    } else {
-      listArray[0] = {
-        ...listArray[0],
-        head: false,
-        tail: false,
-        state: ElementStates.Changing,
-        item: "",
-        isRemoved: true,
-        newCircle: { item: listArray[0].item },
-      };
-    }
-    setListArray([...listArray]);
+  const handleAddToTail = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setIsLoading((prevState) => ({ ...prevState, addInTail: true }));
+    setIsDisabled((prevstate) => ({
+      ...prevstate,
+      removeFromHead: true,
+      removeFromTail: true,
+    }));
+    if (!value) return null;
 
-    await sleep(DELAY_IN_MS);
+    setTopCircleIndex(linkedList.array.length - 1);
+    setTopCircleLetter(value);
+    linkedList.append(value);
+    setValue("");
 
-    listArray[0].state = ElementStates.Modified;
-    listArray.shift();
-    setListArray([...listArray]);
+    setTimeout(() => {
+      setLetters(linkedList.array);
+      setTopCircleIndex(-1);
+      setTopCircleLetter("");
 
-    await sleep(DELAY_IN_MS);
-    if (linked.getSize() > 0) {
-      listArray[0] = {
-        ...listArray[0],
-        state: ElementStates.Default,
-        head: true,
-      };
-      setListArray([...listArray]);
-    }
-    setInput("");
-    setRemoveHead(false);
+      setModifiedIndexes([linkedList.array.length - 1]);
+
+      setTimeout(() => {
+        setModifiedIndexes([]);
+        setIsLoading((prevState) => ({ ...prevState, addInTail: false }));
+        setIsDisabled((prevstate) => ({
+          ...prevstate,
+          removeFromHead: false,
+          removeFromTail: false,
+        }));
+      }, 500);
+    }, 500);
   };
 
-  const onRemoveTail = async () => {
-    setRemoveTail(true);
-    linked.deleteTail();
-    listArray[listArray.length - 1] = {
-      ...listArray[listArray.length - 1],
-      tail: false,
-      state: ElementStates.Changing,
-      item: "",
-      isRemoved: true,
-      newCircle: { item: listArray[listArray.length - 1].item },
-    };
-    setListArray([...listArray]);
-    await sleep(DELAY_IN_MS);
+  const handleDeleteFromHead = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setIsLoading((prevState) => ({ ...prevState, removeFromHead: true }));
+    setIsDisabled((prevstate) => ({
+      ...prevstate,
+      removeFromTail: true,
+    }));
+    setLetters(
+        letters.map((letter, index) => {
+          if (index === 0) {
+            return (letter = "");
+          } else {
+            return letter;
+          }
+        })
+    );
+    setBottomCircleIndex(0);
+    setBottomCircleLetter(linkedList.currentHead);
 
-    if (linked.getSize() > 0 && listArray) {
-      listArray.pop();
-      listArray[listArray.length - 1].state = ElementStates.Modified;
-      setListArray([...listArray]);
+    linkedList.deleteHead();
 
-      await sleep(DELAY_IN_MS);
-
-      listArray[listArray.length - 1].state = ElementStates.Default;
-      listArray[listArray.length - 1].tail = true;
-    } else {
-      listArray.pop();
-    }
-
-    setListArray([...listArray]);
-    setInput("");
-    setRemoveTail(false);
+    setTimeout(() => {
+      setLetters(linkedList.array);
+      setBottomCircleIndex(-1);
+      setBottomCircleLetter("");
+      setIsLoading((prevState) => ({ ...prevState, removeFromHead: false }));
+      setIsDisabled((prevstate) => ({
+        ...prevstate,
+        removeFromTail: false,
+      }));
+    }, 500);
   };
 
-  const onAddByIndex = async () => {
-    setAddByIndex(true);
-    linked.insertAt(input, index);
-    for (let i = 0; i <= index; i++) {
-      listArray[i] = {
-        ...listArray[i],
-        state: ElementStates.Changing,
-        isAdded: true,
-        newCircle: { item: input },
-      };
-      if (i > 0) {
-        listArray[i - 1] = {
-          ...listArray[i - 1],
-          state: ElementStates.Changing,
-          isAdded: false,
-          newCircle: null,
-        };
-      }
-      setListArray([...listArray]);
+  const handleDeleteFromTail = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setIsLoading((prevState) => ({ ...prevState, removeFromTail: true }));
+    setIsDisabled((prevstate) => ({
+      ...prevstate,
+      removeFromHead: true,
+    }));
 
-      await sleep(DELAY_IN_MS);
-    }
-    listArray[index] = {
-      ...listArray[index!],
-      isAdded: false,
-      newCircle: null,
-    };
-    listArray.splice(index, 0, {
-      item: input,
-      state: ElementStates.Modified,
+    setLetters(
+        letters.map((letter, index) => {
+          if (index === linkedList.array.length - 1) {
+            return (letter = "");
+          } else {
+            return letter;
+          }
+        })
+    );
+    setBottomCircleIndex(linkedList.array.length - 1);
+    setBottomCircleLetter(linkedList.currentTail);
+    linkedList.deleteTail();
+
+    setTimeout(() => {
+      setLetters(linkedList.array);
+      setBottomCircleIndex(-1);
+      setBottomCircleLetter("");
+      setIsLoading((prevState) => ({ ...prevState, removeFromTail: false }));
+      setIsDisabled((prevState) => ({
+        ...prevState,
+        removeFromHead: false,
+      }));
+    }, 500);
+  };
+
+  const handleAddByIndex = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    let counter: number = 0;
+    setIsLoading((prevState) => ({ ...prevState, addByIndex: true }));
+    setIsDisabled({
+      addToHead: true,
+      addToTail: true,
+      removeFromHead: true,
+      removeFromTail: true,
+      addByIndex: true,
+      removeByIndex: true,
     });
-    setListArray([...listArray]);
+    const interval = setInterval(() => {
+      if (counter + 1 <= Number(indexValue)) {
+        setTimeout(() => {
+          setChangedIndexes((prevState) => [...prevState, counter - 1]);
+          setTopCircleIndex(counter);
+          setTopCircleLetter(value);
+          counter++;
+        }, 500);
+      } else {
+        clearInterval(interval);
 
-    await sleep(DELAY_IN_MS);
+        linkedList.addByIndex(value, Number(indexValue));
 
-    listArray.forEach((item) => (item.state = ElementStates.Default));
-    setListArray([...listArray]);
-    listArray[1].head = false;
-    listArray[0].head = true;
-    setListArray([...listArray]);
-    setInput("");
-    setIndex(0);
-    setAddByIndex(false);
+        setTimeout(() => {
+          setModifiedIndexes([Number(indexValue)]);
+          setLetters(linkedList.array);
+          setTopCircleIndex(-1);
+          setTopCircleLetter("");
+
+          setTimeout(() => {
+            setModifiedIndexes([]);
+            setChangedIndexes([]);
+            setIsLoading((prevState) => ({ ...prevState, addByIndex: false }));
+            setIsDisabled({
+              addToHead: false,
+              addToTail: false,
+              removeFromHead: false,
+              removeFromTail: false,
+              addByIndex: false,
+              removeByIndex: false,
+            });
+          }, 500);
+        }, 500);
+      }
+    }, 500);
+    setIndexValue("");
+    setValue("");
   };
 
-  const onRemoveByIndex = async () => {
-    setRemoveByIndex(true);
-    for (let i = 0; i <= index; i++) {
-      listArray[i].state = ElementStates.Changing;
-      setListArray([...listArray]);
+  const handleDeleteByIndex = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    let counter: number = 0;
+    setIsLoading((prevState) => ({ ...prevState, removeByIndex: true }));
+    setIsDisabled({
+      addToHead: true,
+      addToTail: true,
+      removeFromHead: true,
+      removeFromTail: true,
+      addByIndex: true,
+      removeByIndex: true,
+    });
+    const interval = setInterval(() => {
+      if (counter + 1 <= Number(indexValue)) {
+        setChangedIndexes((prevState) => [...prevState, counter]);
+        counter++;
+      } else {
+        clearInterval(interval);
+        setChangedIndexes([counter]);
+        setLetters(
+            letters.map((letter, index) => {
+              if (index === counter) {
+                return (letter = "");
+              } else {
+                return letter;
+              }
+            })
+        );
+        if (counter === 0) {
+          setBottomCircleIndex(0);
+          setBottomCircleLetter(linkedList.currentHead);
+          linkedList.deleteHead();
+        } else {
+          setBottomCircleIndex(counter);
+          setBottomCircleLetter(linkedList.getByIndex(Number(indexValue)));
+          linkedList.deleteByIndex(Number(indexValue));
+        }
 
-      await sleep(DELAY_IN_MS);
-    }
-    listArray[index] = {
-      ...listArray[index],
-      item: "",
-      isRemoved: true,
-      newCircle: { item: listArray[index].item },
-    };
-    setListArray([...listArray]);
+        setTimeout(() => {
+          setLetters(linkedList.array);
+          setBottomCircleIndex(-1);
+          setBottomCircleLetter("");
 
-    await sleep(DELAY_IN_MS);
-
-    listArray.splice(index, 1);
-    setListArray([...listArray]);
-
-    await sleep(DELAY_IN_MS);
-
-    listArray.forEach((item) => (item.state = ElementStates.Default));
-    setListArray([...listArray]);
-
-    listArray[listArray.length - 1].tail = true;
-    listArray[0].head = true;
-    setListArray([...listArray]);
-    setInput("");
-    setIndex(0);
-    setRemoveByIndex(false);
+          setTimeout(() => {
+            setChangedIndexes([]);
+            setIsLoading((prevState) => ({
+              ...prevState,
+              removeByIndex: false,
+            }));
+            setIsDisabled({
+              addToHead: false,
+              addToTail: false,
+              removeFromHead: false,
+              removeFromTail: false,
+              addByIndex: false,
+              removeByIndex: false,
+            });
+          }, 500);
+        }, 500);
+      }
+    }, 500);
+    setValue("");
+    setIndexValue("");
   };
 
-  const disabledBtnAdd = input === "" || listArray.length > 5;
-  const disabledBtnRemove = listArray.length < 1;
+  const getCurrentState = (index: number): ElementStates => {
+    if (modifiedIndexes.includes(index)) return ElementStates.Modified;
+    if (changedIndexes.includes(index)) return ElementStates.Changing;
+    return ElementStates.Default;
+  };
 
   return (
-    <SolutionLayout title="Связный список">
-      <div className={style.wrapper}>
-        <Input
-            placeholder="Введите значение"
-            onChange={onChangeValueInput}
-            maxLength={4}
-            isLimitText
-            value={input}
-            disabled={listArray.length > 5}
-            data-cy="input-value-list"
-        />
-        <Button
-            extraClass={style.btn}
-            text={"Добавить в head"}
-            onClick={onAddHead}
-            disabled={
-                addTail ||
-                removeHead ||
-                removeTail ||
-                addByIndex ||
-                removeByIndex ||
-                disabledBtnAdd
-            }
-            isLoader={addHead}
-            data-cy="btn-add-head-list"
-        />
-        <Button
-            extraClass={style.btn}
-            text={"Добавить в tail"}
-            onClick={onAddTail}
-            disabled={
-                addHead ||
-                removeHead ||
-                removeTail ||
-                addByIndex ||
-                removeByIndex ||
-                disabledBtnAdd
-            }
-            isLoader={addTail}
-            data-cy="btn-add-tail-list"
-        />
-        <Button
-            extraClass={style.btn}
-            text={"Удалить из head"}
-            onClick={onRemoveHead}
-            disabled={
-                addHead ||
-                addTail ||
-                removeTail ||
-                addByIndex ||
-                removeByIndex ||
-                disabledBtnRemove
-            }
-            isLoader={removeHead}
-            data-cy="btn-remove-head-list"
-        />
-        <Button
-            extraClass={style.btn}
-            text={"Удалить из tail"}
-            onClick={onRemoveTail}
-            disabled={
-                addHead ||
-                addTail ||
-                removeHead ||
-                addByIndex ||
-                removeByIndex ||
-                disabledBtnRemove
-            }
-            isLoader={removeTail}
-            data-cy="btn-remove-tail-list"
-        />
-      </div>
-      <div className={style.wrapper}>
-        <Input
-            placeholder="Введите индекс"
-            type={"number"}
-            max={listArray.length - 1}
-            min={0}
-            onChange={onChangeValueInput}
-            value={index}
-            data-cy="input-index-list"
-        />
-        <Button
-            extraClass={style.btnIndex}
-            text={"Добавить по индексу"}
-            onClick={onAddByIndex}
-            disabled={
-                addHead ||
-                addTail ||
-                removeHead ||
-                removeTail ||
-                removeByIndex ||
-                (index !== 0 && input === "") ||
-                !index ||
-                listArray.length >= 8 ||
-                +index > listArray.length - 1
-            }
-            isLoader={addByIndex}
-            data-cy="btn-add-byIndex-list"
-        />
-        <Button
-            extraClass={style.btnIndex}
-            text={"Удалить по индексу"}
-            onClick={onRemoveByIndex}
-            disabled={
-                addHead ||
-                addTail ||
-                removeHead ||
-                removeTail ||
-                addByIndex ||
-                listArray.length <= 1 ||
-                !index ||
-                +index > listArray.length - 1
-            }
-            isLoader={removeByIndex}
-            data-cy="btn-remove-byIndex-list"
-        />
-      </div>
-      <div className={style.wrapperCircle}>
-        {listArray.map((item, index) => (
-            <div className={style.circle} key={index}>
-              <Circle
-                  key={index}
-                  index={index}
-                  letter={"" + item.item}
-                  head={item.head ? "head" : ""}
-                  tail={item.tail ? "tail" : ""}
-                  state={item.state}
-                  data-cy="test1"
+      <SolutionLayout title="Связный список">
+        <div className = { styles.wrapper }>
+          <form className = { styles.options }>
+            <div className = { styles.container }>
+              <div className = { styles.input }>
+                <Input
+                    placeholder = "Введите значение"
+                    maxLength = { 4 }
+                    type = "text"
+                    isLimitText =  {true }
+                    value = { value.replace(/\D/g, "") }
+                    onChange = { handleInput }
+                />
+              </div>
+              <Button
+                  text = "Добавить в head"
+                  onClick = { handleAddToHead }
+                  disabled = {(value.length === 0 && indexValue.length === 0)
+                      || isDisabled.addToHead
+                      || (value.length === 0 && indexValue.length !== 0)
+                  }
+                  isLoader = { isLoading.addToHead }
+                  extraClass={ styles.valueButton }
               />
-              {index < listArray.length - 1 && (
-                  <ArrowIcon
-                      fill={
-                        item.state === ElementStates.Changing ? "#d252e1" : "#0032ff"
-                      }
-                  />
-              )}
-
-              {item.isAdded && item.newCircle?.item !== undefined && (
-                  <Circle
-                      isSmall={true}
-                      state={ElementStates.Changing}
-                      letter={"" + item.newCircle.item}
-                      extraClass={style.circleAdd}
-                  />
-              )}
-
-              {item.isRemoved && item.newCircle?.item !== null && (
-                  <Circle
-                      isSmall={true}
-                      state={ElementStates.Changing}
-                      letter={"" + item.newCircle?.item}
-                      extraClass={style.circleRemove}
-                  />
-              )}
+              <Button
+                  text = "Добавить в tail"
+                  onClick = { handleAddToTail }
+                  disabled = {(value.length === 0 && indexValue.length === 0)
+                      || isDisabled.addToTail
+                      || (value.length === 0 && indexValue.length !== 0)
+                  }
+                  isLoader = { isLoading.addToTail }
+                  extraClass={ styles.valueButton }
+              />
+              <Button
+                  text = "Удалить из head"
+                  onClick = { handleDeleteFromHead }
+                  isLoader = { isLoading.removeFromHead }
+                  disabled = { isDisabled.removeFromHead
+                      || (value.length !== 0 && indexValue.length === 0)
+                      || (letters.length === 0)
+                  }
+                  extraClass={ styles.valueButton }
+              />
+              <Button
+                  text = "Удалить из tail"
+                  onClick = { handleDeleteFromTail }
+                  isLoader = { isLoading.removeFromTail }
+                  disabled = { isDisabled.removeFromTail
+                      || (value.length !== 0 && indexValue.length === 0)
+                      || (letters.length === 0)
+                  }
+                  extraClass={ styles.valueButton }
+              />
             </div>
-        ))}
-      </div>
-    </SolutionLayout>
+            <div className={ styles.container }>
+              <div className={ styles.input }>
+                <Input
+                    placeholder = "Введите индекс"
+                    type = "number"
+                    max = { letters.length - 1 }
+                    onChange = { handleIndexInput }
+                    value = { indexValue.replace(/\D/g, "") }
+                />
+              </div>
+              <div className = { styles.container }>
+                <Button
+                    text = "Добавить по индексу"
+                    onClick = { handleAddByIndex }
+                    disabled = {(value.length === 0 && indexValue.length === 0)
+                        || (value.length === 0 && indexValue.length !== 0)
+                        || letters.length - 1 < Number(indexValue)
+                        || isDisabled.addByIndex
+                        || indexValue === ""
+                    }
+                    isLoader = { isLoading.addByIndex }
+                    extraClass={ styles.indexButton }
+                />
+                <Button
+                    text = "Удалить по индексу"
+                    onClick = { handleDeleteByIndex }
+                    disabled = {(value.length === 0 && indexValue.length === 0)
+                        || isDisabled.removeByIndex
+                        || letters.length - 1 < Number(indexValue)
+                        || indexValue === ""
+                    }
+                    isLoader={ isLoading.removeByIndex }
+                    extraClass={ styles.indexButton }
+                />
+              </div>
+            </div>
+          </form>
+          <div className={ styles.visualBlock }>
+            {letters.map((letter, i, array) => {
+              return (
+                  <React.Fragment key = { i }>
+                    <div className={ styles.twoCirclesWrapper }>
+                      {i === topCircleIndex &&
+                          (<Circle
+                                  letter = { topCircleLetter }
+                                  isSmall = { true }
+                                  state = { ElementStates.Changing }
+                                  extraClass = { styles.topCircle }
+                              />
+                          )}
+                      <Circle
+                          letter = { letter }
+                          index = { i }
+                          head = { i === 0 && topCircleIndex ? "head" : "" }
+                          tail={ array.length - 1 === i && !bottomCircleLetter ? "tail" : "" }
+                          state = { getCurrentState(i) }
+                      />
+                      {i === bottomCircleIndex &&
+                          (<Circle
+                                  letter = { bottomCircleLetter }
+                                  isSmall = { true }
+                                  state = { ElementStates.Changing }
+                                  extraClass = { styles.bottomCircle }
+                              />
+                          )}
+                    </div>
+                    { array.length - 1 !== i && <ArrowIcon></ArrowIcon> }
+                  </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+      </SolutionLayout>
   );
 };

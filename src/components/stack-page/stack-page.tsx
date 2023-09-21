@@ -20,7 +20,7 @@ export const StackPage: React.FC = () => {
 
   const [input, setInput] = useState<string>('');
   const [stacks, setStacks] = useState<ICircle[]>([]);
-  const [loader, setLoader] = useState(false);
+  const [loader, setLoader] = useState([false, false, false]);
 
   const onChangeValueInput = (evt: ChangeEvent<HTMLInputElement>) => {
     setInput(evt.target.value);
@@ -29,7 +29,7 @@ export const StackPage: React.FC = () => {
   const stack = new Stack<string>();
 
   const onAdd = async () => {
-    setLoader(true)
+    setLoader([true, false, false])
     if (input) {
       stack.push(input);
       stacks.push({
@@ -43,26 +43,26 @@ export const StackPage: React.FC = () => {
       stacks[stacks.length - 1].state = ElementStates.Default;
       setStacks([...stacks]);
     }
-    setLoader(false)
+    setLoader([false, false, false])
   };
 
   const onRemove = async () => {
-    setLoader(true)
+    setLoader([false, true, false])
     stacks[stacks.length - 1].state = ElementStates.Changing;
     setStacks([...stacks]);
     await sleep(SHORT_DELAY_IN_MS);
     stack.pop();
     stacks.pop();
     setStacks([...stacks]);
-    setLoader(false)
+    setLoader([false, false, false])
   };
 
   const onClear = () => {
-    setLoader(true)
+    setLoader([false, false, true])
     stack.clear();
     setStacks([]);
     setTimeout(() => {
-      setLoader(false)
+      setLoader([false, false, false])
     }, 500)
   };
 
@@ -76,9 +76,9 @@ export const StackPage: React.FC = () => {
       <div className={styles.wrapper}>
         <form className={styles.wrapperForm} onSubmit={onSubmit}>
           <Input isLimitText maxLength={4} onChange={onChangeValueInput} value={input} placeholder="Введите текст" />
-          <Button disabled={input === ''} onClick={onAdd} isLoader = { loader } type="button" text="Добавить" />
-          <Button disabled={!stacks.length} onClick={onRemove} isLoader = { loader } type="button" text="Удалить" />
-          <Button disabled={!stacks.length} onClick={onClear} isLoader = { loader } type="button" text="Очистить" />
+          <Button disabled={input === ''} onClick={onAdd} isLoader = { loader[0] } type="button" text="Добавить" />
+          <Button disabled={!stacks.length} onClick={onRemove} isLoader = { loader[1] } type="button" text="Удалить" />
+          <Button disabled={!stacks.length} onClick={onClear} isLoader = { loader[2] } type="button" text="Очистить" />
         </form>
         <ul className={styles.wrapperCircle}>
           {stacks.map((item, index) => (
