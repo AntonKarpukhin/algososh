@@ -1,184 +1,161 @@
-import { ElementStates } from "../../types/element-states";
-
-type TItemArray<T> = {
-	item: T;
-	state: ElementStates;
-};
-
-export type TListElement = TItemArray<string> & {
-	head?: boolean;
-	tail?: boolean;
-	isAdded?: boolean;
-	isRemoved?: boolean;
-	newCircle?: {
-		item: string;
-	} | null;
-};
+export interface ILinkedList<T> {
+	prepend: (element: T) => void;
+	append: (element: T) => void;
+	addByIndex: (element: T, index: number) => void;
+	deleteByIndex: (index: number) => void;
+	deleteHead: () => void;
+	deleteTail: () => void;
+	toArray: () => T[]
+	isEmpty: () => boolean;
+	getByIndex: (index: number) => void;
+}
 
 export class LinkedListNode<T> {
 	value: T;
-	next: LinkedListNode<T> | null = null;
+	next: LinkedListNode<T> | null;
+
 	constructor(value: T, next?: LinkedListNode<T> | null) {
 		this.value = value;
 		this.next = next === undefined ? null : next;
 	}
 }
 
-interface ILinkedList<T> {
-	append: (element: T) => void;
-	prepend: (value: T) => void;
-	insertAt: (element: T, position: number) => void;
-	getNodeByIndex: (index: number) => T | null;
-	deleteByIndex: (index: number) => void;
-	deleteHead: () => void;
-	deleteTail: () => void;
-	getSize: () => number;
-}
-
 export class LinkedList<T> implements ILinkedList<T> {
 	private head: LinkedListNode<T> | null;
 	private size: number;
-	private tail: LinkedListNode<T> | null;
-	constructor(initialState?: T[]) {
+
+	constructor(array: T[]) {
 		this.head = null;
-		this.tail = null;
 		this.size = 0;
-		initialState?.forEach((el) => {
-			this.insertAt(el, 0);
-		});
+		array.forEach(item => this.prepend(item))
 	}
 
-	append = (element: T) => {
-		const node = new LinkedListNode(element);
+	get listSize(): number {
+		return this.size;
+	}
 
-		if (!this.head || !this.tail) {
+	get array(): T[] {
+		return this.toArray();
+	}
+
+	get currentHead() {
+		return this.array[0];
+	}
+
+	get currentTail() {
+		return this.array[this.array.length - 1];
+	}
+
+	prepend = (element: T): void => {
+		const node = new LinkedListNode<T>(element);
+		if (!this.isEmpty()) {
+			node.next = this.head
 			this.head = node;
-			this.tail = node;
-			this.size++;
-
-			return this;
 		}
-		this.tail.next = node;
-		this.tail = node;
-		this.size++;
-	};
-
-	prepend = (value: T) => {
-		let node = new LinkedListNode(value);
-
-		if (!this.head) {
-			this.head = node;
-		}
-		node.next = this.head;
 		this.head = node;
 		this.size++;
-	};
+	}
 
-	insertAt = (element: T, index: number) => {
-		if (index < 0 || index > this.getSize()) {
-			throw new Error("Введите действительный индекс");
-		} else {
-			const node = new LinkedListNode(element);
-
-			if (index === 0) {
-				node.next = this.head;
-				this.head = node;
-			} else {
-				let curr = this.head;
-				let currIndex = 0;
-				let prev = this.head;
-
-				while (currIndex < index) {
-					if (curr) {
-						currIndex++;
-						prev = curr;
-						curr = curr.next;
-					}
-				}
-
-				node.next = curr;
-				if (prev) {
-					prev.next = node;
-				}
+	append = (element: T): void => {
+		const node = new LinkedListNode<T>(element);
+		if (this.head === null) {
+			this.head = node;
+		}
+		if (!this.isEmpty()) {
+			let prev = this.head;
+			while (prev?.next) {
+				prev = prev.next;
 			}
+			prev.next = node;
+		}
+		this.size++;
+	}
 
+	addByIndex = (element: T, index: number): void => {
+		if (index < 0 || index > this.size) {
+			return;
+		} else {
+			const newNode = new LinkedListNode<T>(element);
+			if (index === 0) {
+				newNode.next = this.head;
+				this.head = newNode;
+			} else {
+				let current = this.head;
+				let currentIndex = 0;
+				let previous = null;
+
+				while (currentIndex < index) {
+					previous = current;
+					current = current!.next;
+					currentIndex++;
+				}
+				newNode.next = current;
+				previous!.next = newNode;
+			}
 			this.size++;
 		}
-	};
+	}
 
-	getNodeByIndex = (index: number) => {
-		if (index < 0 || index > this.size) {
-			return null;
-		}
-		let current = this.head;
-		let currentIndex = 0;
+	deleteByIndex = (index: number): void => {
+		if (index < 0 || index >= this.size) return;
+		let current,
+			previous,
+			counter = 0;
+		current = this.head;
+		previous = current;
 
-		while (currentIndex < index && current) {
-			current = current.next;
-			currentIndex++;
-		}
-		return current ? current.value : null;
-	};
-
-	deleteByIndex = (index: number) => {
-		if (index < 0 || index > this.size) {
-			return null;
-		}
-		let current = this.head;
-
-		if (index === 0 && current) {
-			this.head = current.next;
+		if (index === 0) {
+			this.head = current ? current : null;
 		} else {
-			let previous = null;
-			let currentIndex = 0;
-
-			while (currentIndex < index && current) {
+			while (counter < index) {
+				counter++;
 				previous = current;
-				current = current.next;
-				currentIndex++;
+				if (current) {
+					current = current.next;
+				}
 			}
-
-			if (previous && current) {
-				previous.next = current.next;
+			if (previous) {
+				previous.next = current ? current.next : null;
 			}
 		}
 		this.size--;
-		return current ? current.value : null;
-	};
+	}
 
-	deleteHead = () => {
+	deleteHead = (): void => {
 		if (!this.head) {
-			return null;
+			return;
 		}
-		let deletedHead = this.head;
+		this.head = this.head.next;
+		this.size--;
+	}
 
-		if (this.head.next) {
-			this.head = deletedHead.next;
-		} else {
-			this.head = null;
-			this.tail = null;
+	deleteTail = (): void => {
+		let curr = this.head;
+		let prev;
+		while (curr?.next) {
+			prev = curr;
+			curr = curr.next;
+		}
+		if (prev?.next) {
+			prev.next = null;
 		}
 		this.size--;
-		return deletedHead ? deletedHead.value : null;
-	};
+	}
 
-	deleteTail = () => {
-		if (this.size === 0) {
-			return null;
-		}
-
+	toArray = (): T[] => {
+		const array = [];
 		let currentNode = this.head;
-		let prev = null;
-		let currentIndex = 0;
-		while (currentIndex < this.size - 1 && currentNode) {
-			prev = currentNode;
+		while (currentNode) {
+			array.push(currentNode.value)
 			currentNode = currentNode.next;
-			currentIndex++;
 		}
-		if (prev && currentNode) prev.next = currentNode.next;
-		this.size--;
-		return currentNode ? currentNode.value : null;
-	};
 
-	getSize = () => this.size;
+		return array;
+	}
+
+	isEmpty = (): boolean => this.listSize === 0;
+
+	getByIndex = (index: number) => {
+		return this.array[index];
+	};
 }
