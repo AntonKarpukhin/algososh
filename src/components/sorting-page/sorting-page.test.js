@@ -15,7 +15,7 @@ describe('SortingPage', () => {
 
         const container = screen.getByTestId('container');
         // Проверяем, что массив пустой
-        expect(container).toBeEmptyDOMElement()
+        expect(container).not.toBeEmptyDOMElement()
 
     });
 

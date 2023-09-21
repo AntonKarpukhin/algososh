@@ -23,7 +23,7 @@ export const QueuePage: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const [queues, setQueues] = useState<ICircle[]>([]);
   const [isQueue, setIsQueue] = useState<boolean>(true);
-  const [loader, setLoader] = useState(false);
+  const [loader, setLoader] = useState([false, false, false]);
 
   const maxQueueLength = 7;
 
@@ -61,7 +61,7 @@ export const QueuePage: React.FC = () => {
   };
 
   const onEnqueue = async () => {
-    setLoader(true)
+    setLoader([true, false, false])
     const tailIndex = !queue.isEmpty() ? queue.getTail().index : 0;
 
     if (input && (tailIndex + 1 !== maxQueueLength)) {
@@ -93,21 +93,21 @@ export const QueuePage: React.FC = () => {
       };
       setQueues([...queues]);
     }
-    setLoader(false)
+    setLoader([false, false, false])
   };
 
   const onClear = () => {
-    setLoader(true)
+    setLoader([false, false, true])
     queue.clear();
     const initialArray = getInitial();
     setQueues([...initialArray]);
     setTimeout(() => {
-      setLoader(false)
+      setLoader([false, false, false])
     }, 500)
   };
 
   const onDequeue = async () => {
-    setLoader(true)
+    setLoader([false, true, false])
     const tail = queue.getTail();
     const head = queue.getHead();
 
@@ -138,7 +138,7 @@ export const QueuePage: React.FC = () => {
     } else {
       onClear();
     }
-    setLoader(false)
+    setLoader([false, false, false])
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -153,9 +153,9 @@ export const QueuePage: React.FC = () => {
       <div className={styles.wrapper}>
         <form className={styles.wrapperForm} onSubmit={onSubmit}>
           <Input isLimitText maxLength={4} onChange={onChangeValueInput} value={input} placeholder="Введите текст" />
-          <Button disabled={!input || isQueueEnded} onClick={onEnqueue} isLoader = { loader } type="button" text="Добавить" />
-          <Button disabled={isQueue} onClick={onDequeue} isLoader = { loader } type="button" text="Удалить" />
-          <Button disabled={isQueue} onClick={onClear} isLoader = { loader } type="button" text="Очистить" />
+          <Button disabled={!input || isQueueEnded} onClick={onEnqueue} isLoader = { loader[0] } type="button" text="Добавить" />
+          <Button disabled={isQueue} onClick={onDequeue} isLoader = { loader[1] } type="button" text="Удалить" />
+          <Button disabled={isQueue} onClick={onClear} isLoader = { loader[2] } type="button" text="Очистить" />
         </form>
         <ul className={styles.wrapperCircle}>
           {queues.map((item, index) => (

@@ -1,6 +1,8 @@
+import { claasCircles, host } from "../utils/constants";
+
 describe("Стэк работает корректно", () => {
     beforeEach('Приложение работает',() => {
-        cy.visit("http://localhost:3000/stack")
+        cy.visit(`${host}/stack`)
     })
 
     it("Eсли в инпуте пусто, то кнопка добавления недоступна", () => {
@@ -13,32 +15,32 @@ describe("Стэк работает корректно", () => {
         cy.get("button").contains("Добавить").click()
 
         cy.clock()
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
             .contains("6")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
             .contains("6")
         cy.get("input").type("66").should("have.value", "66");
         cy.get("button").contains("Добавить").click()
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
             .contains("6")
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
             .contains("66")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
             .contains("6")
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
             .contains("66")
@@ -54,34 +56,34 @@ describe("Стэк работает корректно", () => {
         cy.get("button").contains("Добавить").click()
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 2)
 
         cy.tick(500)
         cy.get("button").contains("Удалить").click();
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
             .contains("6")
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
             .contains("66")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 1)
 
         cy.tick(500)
         cy.get("button").contains("Удалить").click()
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
             .contains("6")
 
         cy.tick(500);
-        cy.get('[data-testid="circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 0)
     })
 
@@ -102,6 +104,6 @@ describe("Стэк работает корректно", () => {
 
         cy.tick(500);
         cy.get("button").contains("Очистить").click()
-        cy.get('div[class*="circle_circle"]').should("have.length", 0)
+        cy.get(`${claasCircles}`).should("have.length", 0)
     })
 })

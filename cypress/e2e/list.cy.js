@@ -1,6 +1,8 @@
+import { claasCircles, claasCirclesContent, host } from "../utils/constants";
+
 describe("Список", () => {
     beforeEach(() => {
-        cy.visit("http://localhost:3000/list")
+        cy.visit(`${host}/list`)
     })
 
     it("Кнопка добавления недоступна, если в инпуте пусто", () => {
@@ -12,20 +14,20 @@ describe("Список", () => {
     })
 
     it("Корректность отрисовки дефолтного списка", () => {
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("not.be.empty")
             .should("have.length", 4)
-        cy.get('div[class*="circle_content"]')
+        cy.get(`${claasCirclesContent}`)
             .eq(0).contains("head")
-        cy.get('div[class*="circle_content"]')
+        cy.get(`${claasCirclesContent}`)
             .eq(3).contains("tail")
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0).should("have.css", "border-color", "rgb(0, 50, 255)").contains("0");
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1).should("have.css", "border-color", "rgb(0, 50, 255)").contains("34");
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(2).should("have.css", "border-color", "rgb(0, 50, 255)").contains("8");
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(3).should("have.css", "border-color", "rgb(0, 50, 255)").contains("1");
     })
 
@@ -33,32 +35,32 @@ describe("Список", () => {
         cy.get("input").clear()
         cy.get("button").should("be.disabled")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 4)
         cy.get('input[placeholder="Введите значение"]').type("6").should("have.value", "6")
 
         cy.clock()
         cy.get("button").contains("Добавить в head").click()
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 5)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .first()
             .should("have.css", "border-color", "rgb(210, 82, 225)")
             .contains("6")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .first()
             .contains("6")
-        cy.get('div[class*="circle_content"]')
+        cy.get(`${claasCirclesContent}`)
             .eq(0).contains("head")
 
         cy.tick(1000)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .first()
             .should("have.css", "border-color", "rgb(0, 50, 255)")
             .contains("6")
-        cy.get('div[class*="circle_content"]')
+        cy.get(`${claasCirclesContent}`)
             .eq(0).contains("head")
     })
 
@@ -66,25 +68,25 @@ describe("Список", () => {
         cy.get("input").clear()
         cy.get("button").should("be.disabled")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 4)
 
         cy.clock()
         cy.get('input[placeholder="Введите значение"]').type("66").should("have.value", "66")
         cy.get("button").contains("Добавить в tail").click()
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 5)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(3)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
             .contains("66")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(4)
             .should("have.css", "border-color", "rgb(127, 224, 81)")
             .contains("66")
-        cy.get('div[class*="circle_content"]')
+        cy.get(`${claasCirclesContent}`)
             .last()
             .contains("tail")
     })
@@ -92,7 +94,7 @@ describe("Список", () => {
     it("Корректность добавления элемента по индексу", () => {
         cy.get("input").clear()
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 4)
 
         cy.clock()
@@ -101,34 +103,34 @@ describe("Список", () => {
         cy.get("button").contains("Добавить по индексу").click()
 
         cy.tick(1000)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 5)
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .first()
             .should("have.css", "border-color", "rgb(210, 82, 225)")
             .contains("666")
 
         cy.tick(500)
-        cy.get('div[class*="circle_content"]')
+        cy.get(`${claasCirclesContent}`)
             .eq(0).contains("head")
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .first()
             .should("have.css", "border-color", "rgb(210, 82, 225)")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
             .contains("666")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
             .should("have.css", "border-color", "rgb(127, 224, 81)")
             .contains("666")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
             .contains("666")
@@ -137,15 +139,15 @@ describe("Список", () => {
     it("Корректность удаления элемента из head", () => {
         cy.clock()
         cy.get("button").contains("Удалить из head").click()
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
     })
@@ -153,12 +155,12 @@ describe("Список", () => {
     it("Корректность удаления элемента из tail", () => {
         cy.clock()
         cy.get("button").contains("Удалить из tail").click()
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .last()
             .should("have.css", "border-color", "rgb(210, 82, 225)")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
     })
 
@@ -167,22 +169,22 @@ describe("Список", () => {
         cy.get('input[placeholder="Введите индекс"]').type("0").should("have.value", "0")
         cy.get("button").contains("Удалить по индексу").click()
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
 
         cy.tick(500)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
             .should("have.css", "border-color", "rgb(210, 82, 225)")
 
         cy.tick(1000)
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.css", "border-color", "rgb(0, 50, 255)")
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .should("have.length", 3)
     })
 })

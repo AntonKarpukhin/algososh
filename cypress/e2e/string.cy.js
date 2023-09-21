@@ -1,6 +1,8 @@
+import { claasCircles, COLOR_CHANGING, COLOR_DEFAULT, COLOR_MODIFIED, host } from "../utils/constants";
+
 describe("Строка", () => {
     beforeEach(() => {
-        cy.visit("http://localhost:3000/recursion");
+        cy.visit(`${host}/recursion`);
     });
 
     it("Если в инпуте пусто, то кнопка добавления недоступна", () => {
@@ -13,107 +15,107 @@ describe("Строка", () => {
         cy.get("button").contains("Развернуть").click()
 
         cy.clock();
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
-            .should("have.css", "border-color", "rgb(210, 82, 225)")
+            .should("have.css", "border-color", `${COLOR_MODIFIED}`)
             .contains("h")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
-            .should("have.css", "border-color", "rgb(0, 50, 255)")
+            .should("have.css", "border-color", `${COLOR_DEFAULT}`)
             .contains("e")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(2)
-            .should("have.css", "border-color", "rgb(0, 50, 255)")
+            .should("have.css", "border-color", `${COLOR_DEFAULT}`)
             .contains("l")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(3)
-            .should("have.css", "border-color", "rgb(0, 50, 255)")
+            .should("have.css", "border-color", `${COLOR_DEFAULT}`)
             .contains("l")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(4)
-            .should("have.css", "border-color", "rgb(210, 82, 225)")
+            .should("have.css", "border-color", `${COLOR_MODIFIED}`)
             .contains("o")
 
         cy.tick(1000);
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("o")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
-            .should("have.css", "border-color", "rgb(210, 82, 225)")
+            .should("have.css", "border-color", `${COLOR_MODIFIED}`)
             .contains("e")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(2)
-            .should("have.css", "border-color", "rgb(0, 50, 255)")
+            .should("have.css", "border-color", `${COLOR_DEFAULT}`)
             .contains("l")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(3)
-            .should("have.css", "border-color", "rgb(210, 82, 225)")
+            .should("have.css", "border-color", `${COLOR_MODIFIED}`)
             .contains("l")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(4)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("h")
 
         cy.tick(1000);
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("o")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("l")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(2)
-            .should("have.css", "border-color", "rgb(210, 82, 225)")
+            .should("have.css", "border-color", `${COLOR_MODIFIED}`)
             .contains("l")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(3)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("e")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(4)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("h")
 
         cy.tick(1000);
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(0)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("o")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(1)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("l")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(2)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("l")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(3)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("e")
 
-        cy.get('div[class*="circle_circle"]')
+        cy.get(`${claasCircles}`)
             .eq(4)
-            .should("have.css", "border-color", "rgb(127, 224, 81)")
+            .should("have.css", "border-color", `${COLOR_CHANGING}`)
             .contains("h")
     });
 });

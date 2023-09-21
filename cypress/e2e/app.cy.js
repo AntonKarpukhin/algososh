@@ -1,5 +1,7 @@
+import { host } from "../utils/constants";
+
 describe("Тестирование работоспособности приложения", () => {
     it("Приложение работает", () => {
-        cy.visit("http://localhost:3000");
+        cy.visit(`${host}`);
     });
 });

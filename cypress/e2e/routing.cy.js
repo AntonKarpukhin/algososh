@@ -1,6 +1,8 @@
+import { host } from "../utils/constants";
+
 describe("app works correctly with routes", () => {
     beforeEach(() => {
-        cy.visit("http://localhost:3000");
+        cy.visit(`${host}`);
     });
 
     it("should open main page by default", () => {

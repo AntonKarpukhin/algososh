@@ -1,17 +1,17 @@
 import { render, fireEvent,  waitFor, screen } from '@testing-library/react';
 import { StringComponent } from './string';
 import App from "../app/app";
+import { BrowserRouter } from "react-router-dom";
 
 describe('StringComponent', () => {
 
+
+
     it('Четное', async() => {
-        render(<App/>);
+        render(<BrowserRouter> <StringComponent /> </BrowserRouter>);
 
-        const menuButton = screen.getAllByRole("link");
-        fireEvent.click(menuButton[0]);
-
-        const button = screen.getByTestId("button");
-        const input = screen.getByTestId("input");
+        const button = screen.getByTestId('button');
+        const input = screen.getByTestId('input');
 
         fireEvent.change( input, { target: { value: 'helloo' } } );
         fireEvent.click( button );
@@ -26,11 +26,10 @@ describe('StringComponent', () => {
         }, {timeout: 2000})
     });
 
-    it('Нечетное', async () => {
-        render(<App/>);
 
-        const menuButton = screen.getAllByRole("link");
-        fireEvent.click(menuButton[0]);
+
+    it('Нечетное', async () => {
+        render(<BrowserRouter> <StringComponent /> </BrowserRouter>);
 
         const button = screen.getByTestId("button");
         const input = screen.getByTestId("input");
@@ -48,10 +47,7 @@ describe('StringComponent', () => {
     });
 
     it('Один символ', async () => {
-        render(<App/>);
-
-        const menuButton = screen.getAllByRole("link");
-        fireEvent.click(menuButton[0]);
+        render(<BrowserRouter> <StringComponent /> </BrowserRouter>);
 
         const button = screen.getByTestId("button");
         const input = screen.getByTestId("input");
@@ -66,10 +62,7 @@ describe('StringComponent', () => {
     });
 
     it('should correctly handle an empty string', async () => {
-        render(<App/>);
-
-        const menuButton = screen.getAllByRole("link");
-        fireEvent.click(menuButton[0]);
+        render(<BrowserRouter> <StringComponent /> </BrowserRouter>);
 
         const button = screen.getByTestId("button");
         const input = screen.getByTestId("input");
